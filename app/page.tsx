@@ -4,7 +4,10 @@ export default function Home() {
     return (
         <main>
             <div>Hallo</div>
-            <Button><div>Click!</div></Button>
+            <Button>
+                <div>Click!</div>
+            </Button>
+
         </main>
     );
 }
