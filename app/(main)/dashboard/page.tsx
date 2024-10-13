@@ -15,42 +15,6 @@ const DashboardPage = () => {
                 iconBgColor: "bg-cyan-600"
             }
         },
-        {
-            title: "Daily Conversation",
-            cardsLength: 14,
-            theme: {
-                mainText: "text-white",
-                mainBg: "bg-blue-600",
-                blockBg: "bg-amber-200",
-                iconColor: "text-neutral-100",
-                blockText: "text-blue-800",
-                iconBgColor: "bg-cyan-600"
-            }
-        },
-        {
-            title: "Daily Conversation",
-            cardsLength: 14,
-            theme: {
-                mainText: "text-white",
-                mainBg: "bg-blue-600",
-                blockBg: "bg-amber-200",
-                iconColor: "text-neutral-100",
-                blockText: "text-blue-800",
-                iconBgColor: "bg-cyan-600"
-            }
-        },{
-            title: "Daily Conversation",
-            cardsLength: 14,
-            theme: {
-                mainText: "text-white",
-                mainBg: "bg-blue-600",
-                blockBg: "bg-amber-200",
-                iconColor: "text-neutral-100",
-                blockText: "text-blue-800",
-                iconBgColor: "bg-cyan-600"
-            }
-        }
-
     ]
 
     return (

@@ -13,15 +13,16 @@ export const setThemes = pgTable("set-themes", {
 
 export const sets = pgTable("sets", {
     id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
     name: text("name").default("A new set"),
     setThemeId: integer("set_themes_id").references(() => setThemes.id, {onDelete: "cascade"}).notNull(),
-    learnedLanguageId: integer("learned_language_id").references(() => languages.id).notNull(),
+    languageId: integer("language_id").references(() => languages.id).notNull(),
 })
 
 export const setsRelations = relations(sets, ({one, many}) => ({
-    setTheme: one(setThemes),
-    flashCards: many(flashCards),
-    learnedLanguage: one(languages)
+    flashcards: many(flashcards),
+    learnedLanguage: one(languages, {fields: [sets.languageId], references: [languages.id]}),
+    setTheme: one(setThemes, {fields: [sets.setThemeId], references: [setThemes.id]})
 }))
 
 export const languages = pgTable("languages", {
@@ -29,9 +30,9 @@ export const languages = pgTable("languages", {
     name: text("language").notNull()
 })
 
-export const flashcardsTypesEnum = pgEnum('flash-cards-type', ['structured, unstructured'])
+export const flashcardsTypesEnum = pgEnum('flashcards_type', ['structured', 'unstructured'])
 
-export const flashCards = pgTable("flash_cards", {
+export const flashcards = pgTable("flashcards", {
     id: serial("id").primaryKey(),
     userId: text("user_id").notNull(),
     type: flashcardsTypesEnum('type'),
@@ -45,9 +46,9 @@ export const flashCards = pgTable("flash_cards", {
     backSide: text("back_side"),
 })
 
-export const flashCardsRelation = relations(flashCards, ({one}) => ({
+export const flashcardsRelation = relations(flashcards, ({one}) => ({
     set: one(sets, {
-        fields: [flashCards.setId],
+        fields: [flashcards.setId],
         references: [sets.id]
     })
 }))
