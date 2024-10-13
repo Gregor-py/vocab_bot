@@ -16,9 +16,9 @@ export async function POST() {
             setThemeId: 1,
             languageId: 1,
             userId: userId,
-        })
+        }).returning({setId: sets.id})
 
-        return NextResponse.json({set: set})
+        return NextResponse.json(set[0])
     } catch (e) {
         console.error(e)
         NextResponse.error()

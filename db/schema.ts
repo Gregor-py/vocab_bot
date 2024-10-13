@@ -7,8 +7,8 @@ export const setThemes = pgTable("set-themes", {
     mainBg: text("main_bg"),
     innerBlockBg: text("inner_block_bg"),
     iconColor: text("icon_color"),
-    inner_block_text: text("inner_block_text"),
-    icon_bg_color: text("icon_bg_color"),
+    innerBlockText: text("inner_block_text"),
+    iconBgColor: text("icon_bg_color"),
 })
 
 export const sets = pgTable("sets", {
@@ -21,7 +21,7 @@ export const sets = pgTable("sets", {
 
 export const setsRelations = relations(sets, ({one, many}) => ({
     flashcards: many(flashcards),
-    learnedLanguage: one(languages, {fields: [sets.languageId], references: [languages.id]}),
+    language: one(languages, {fields: [sets.languageId], references: [languages.id]}),
     setTheme: one(setThemes, {fields: [sets.setThemeId], references: [setThemes.id]})
 }))
 
