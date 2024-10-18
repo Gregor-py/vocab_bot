@@ -1,12 +1,17 @@
-import { useRouter } from "next/router"
 import {Input} from "@/components/ui/input";
+import {getFlashCardsBySet} from "@/db/queries";
+import {EditFlashcard} from "@/app/(main)/set/edit/[id]/edit-flashcard";
+import { Button } from "@/components/ui/button";
+import {AddFlashcardButton} from "@/app/(main)/set/edit/[id]/add-flashcard-button";
+import {EditFlashcardsList} from "@/app/(main)/set/edit/[id]/edit-flashcards-list";
+
 interface SetPageProps {
     params: {
         id: number;
     };
 }
-const SetEditPage = ({ params }: SetPageProps) => {
-
+const SetEditPage = async ({ params }: SetPageProps) => {
+    const flashcards = await getFlashCardsBySet(params.id)
 
     return (
         <div className={"mt-24"}>
@@ -16,14 +21,7 @@ const SetEditPage = ({ params }: SetPageProps) => {
                 <Input className={"text-3xl h-14"} placeholder={"Name"} value={"A new set"} />
             </div>
 
-            <div className={"flex flex-col gap-4 mt-10"}>
-                <div className={" w-full rounded-2xl pb-4"}>
-                    <div className={"border-b py-3 px-7 "}>
-                        <span className={"font-bold"}>1</span>
-                    </div>
-                </div>
-            </div>
-
+            <EditFlashcardsList initialFlashcards={flashcards} setId={params.id} />
         </div>
     )
 }
