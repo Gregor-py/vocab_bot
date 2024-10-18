@@ -21,7 +21,7 @@ export const getUsersSets = cache(async () => {
     })
 })
 
-export const getFlashCardsBySet = cache(async (setId: number) => {
+export const getFlashcardsBySet = cache(async (setId: number) => {
     const {userId} = auth();
 
     if (!userId) {
@@ -29,9 +29,24 @@ export const getFlashCardsBySet = cache(async (setId: number) => {
     }
 
     return db.query.flashcards.findMany({
-        where: eq(flashcards.setId, setId)
+        where: eq(flashcards.setId, setId),
+        orderBy: flashcards.order
     })
 })
+
+export const getSetById = cache(async (setId: number) => {
+    const {userId} = auth();
+
+    if (!userId) {
+        throw new Error()
+    }
+
+    return db.query.sets.findFirst({
+        where: eq(sets.id, setId),
+    })
+})
+
+
 
 export const getFlashcardById = async (flashcardId: number) => {
     return db.query.flashcards.findFirst({

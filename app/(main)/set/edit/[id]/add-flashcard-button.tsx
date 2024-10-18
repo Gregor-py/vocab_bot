@@ -1,19 +1,19 @@
-import { Button } from "@/components/ui/button"
+import {Button} from "@/components/ui/button"
 import {BadgePlus} from "lucide-react";
 import {flashcards} from "@/db/schema";
 import axios from "axios";
-import {getFlashcardById} from "@/db/queries";
 
 type Flashcard = typeof flashcards.$inferSelect
 
 type Props = {
     setId: number;
     addNewFlashcard: (flashcard: Flashcard) => void;
+    flashcards: Flashcard[];
 }
 
-export const AddFlashcardButton = ({setId, addNewFlashcard}: Props) => {
+export const AddFlashcardButton = ({setId, addNewFlashcard, flashcards}: Props) => {
     const handleCreate = async () => {
-        const flashcard = await axios.post<Flashcard>("/api/flashcard", {setId}).then(data => data.data)
+        const flashcard = await axios.post<Flashcard>("/api/flashcard", {setId, order: flashcards.length+1}).then(data => data.data)
 
         if (!flashcard) {
             return;

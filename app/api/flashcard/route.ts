@@ -13,11 +13,12 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json(); // Important: Parse the request body
-        const { setId } = body;
+        const { setId, order } = body;
 
         const result = await db.insert(flashcards).values({
             setId,
-            userId
+            userId,
+            order
         }).returning({flashcardId: flashcards.id})
 
         const flashcard = await db.query.flashcards.findFirst({

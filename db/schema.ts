@@ -34,16 +34,17 @@ export const flashcardsTypesEnum = pgEnum('flashcards_type', ['structured', 'uns
 
 export const flashcards = pgTable("flashcards", {
     id: serial("id").primaryKey(),
+    order: integer("order").notNull().default(1),
     userId: text("user_id").notNull(),
-    type: flashcardsTypesEnum('type'),
+    type: flashcardsTypesEnum('type').default("structured").notNull(),
     setId: integer("set_id").references(() => sets.id).notNull(),
-    word: text("word"),
-    translations: text("translations"),
-    examples: text("examples"),
-    source: text("source"),
-    definition: text("definition"),
-    frontSide: text("front_side"),
-    backSide: text("back_side"),
+    word: text("word").default(""),
+    translations: text("translations").default(""),
+    examples: text("examples").default(""),
+    source: text("source").default(""),
+    definition: text("definition").default(""),
+    frontSide: text("front_side").default(""),
+    backSide: text("back_side").default(""),
 })
 
 export const flashcardsRelation = relations(flashcards, ({one}) => ({
