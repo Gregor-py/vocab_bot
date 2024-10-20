@@ -11,7 +11,7 @@ type Props = {
 }
 
 
-export const EditFlashcardsList = ({setId}: Props) => {
+export const FlashcardsList = ({setId}: Props) => {
     const updateFlashcards = useFlashcardsStore(state => state.updateFlashcards)
     const updateIsLoading = useFlashcardsStore(state => state.updateIsLoading)
 

@@ -1,5 +1,5 @@
 import {getSetById} from "@/db/queries";
-import {EditFlashcardsList} from "@/app/(main)/set/edit/[id]/edit-flashcards-list";
+import {FlashcardsList} from "@/app/(main)/set/edit/[id]/flashcards-list";
 import {SetTitle} from "@/app/(main)/set/edit/[id]/set-title";
 import {redirect} from "next/navigation";
 
@@ -23,7 +23,7 @@ const SetEditPage = async ({ params }: SetPageProps) => {
                 <SetTitle set={set} />
             </div>
 
-            <EditFlashcardsList setId={params.id} />
+            <FlashcardsList setId={params.id} />
         </div>
     )
 }
