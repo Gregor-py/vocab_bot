@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import {auth} from "@clerk/nextjs/server";
 import {db} from "@/db";
-import {flashcards, sets} from "@/db/schema";
+import {flashcards} from "@/db/schema";
 import {eq} from "drizzle-orm";
 
 type Params = {

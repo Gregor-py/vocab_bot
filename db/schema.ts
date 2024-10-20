@@ -1,5 +1,5 @@
-import { relations } from 'drizzle-orm';
-import {integer, pgEnum, pgTable, serial, text, uniqueIndex, varchar} from 'drizzle-orm/pg-core';
+import {relations} from 'drizzle-orm';
+import {integer, pgEnum, pgTable, serial, text} from 'drizzle-orm/pg-core';
 
 export const setThemes = pgTable("set-themes", {
     id: serial("id").primaryKey(),
@@ -30,13 +30,15 @@ export const languages = pgTable("languages", {
     name: text("language").notNull()
 })
 
-export const flashcardsTypesEnum = pgEnum('flashcards_type', ['structured', 'unstructured'])
+export const flashcardTypeEnum = pgEnum('flashcards_type', ['structured', 'unstructured'])
+
+export type FlashcardType = (typeof flashcardTypeEnum)['enumValues'][number];
 
 export const flashcards = pgTable("flashcards", {
     id: serial("id").primaryKey(),
     order: integer("order").notNull().default(1),
     userId: text("user_id").notNull(),
-    type: flashcardsTypesEnum('type').default("structured").notNull(),
+    type: flashcardTypeEnum('type').default("structured").notNull(),
     setId: integer("set_id").references(() => sets.id).notNull(),
     word: text("word").default(""),
     translations: text("translations").default(""),

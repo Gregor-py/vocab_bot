@@ -71,13 +71,11 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
         updateFlashcard('examples', debouncedExamples);
     }, [debouncedExamples]);
 
-
-
     return (
         <div className={cn("transition-all duration-500 w-full border rounded-2xl pb-4", isRemoving ? "opacity-0" : "")}>
             <div className={"border-b py-3 px-7 flex justify-between items-center"}>
                 <span className={"font-bold"}>{arrayId+1} | {flashcard.id}</span>
-                <TypeSwitcher initialType={flashcard.type} id={flashcard.id} />
+                <TypeSwitcher type={flashcard.type} flashcardId={flashcard.id} />
                 <Button onClick={() => onDelete(flashcard.id)} variant={"destructive"} size={"icon"}><Trash /></Button>
             </div>
 

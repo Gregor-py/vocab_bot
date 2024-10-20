@@ -15,6 +15,7 @@ type Action = {
     updateRemovingFlashcardId: (removingFlashCardId: State['removingFlashcardId']) => void,
     deleteFlashcard: (flashcardId: number) => void,
     addFlashcard: (flashcard: Flashcard) => void,
+    updateFlashcardType: (flashcardId: number, newType: "structured" | "unstructured") => void
 }
 
 export const useFlashcardsStore = create<State & Action>((set) => ({
@@ -26,4 +27,11 @@ export const useFlashcardsStore = create<State & Action>((set) => ({
     updateIsLoading: (isLoading) => set(() => ({ isLoading })),
     deleteFlashcard: (flashcardId) => set(state => ({flashcards: state.flashcards.filter(flashcard => flashcard.id !== flashcardId)})),
     updateRemovingFlashcardId: (removingFlashCardId) => set(() => ({removingFlashcardId: removingFlashCardId})),
+    updateFlashcardType: (flashcardId, newType) => set((state) => ({
+        flashcards: state.flashcards.map(flashcard =>
+            flashcard.id === flashcardId
+                ? { ...flashcard, type: newType }
+                : flashcard
+        )
+    }))
 }))
