@@ -1,8 +1,4 @@
-import {Input} from "@/components/ui/input";
-import {getFlashcardsBySet, getSetById} from "@/db/queries";
-import {EditFlashcard} from "@/app/(main)/set/edit/[id]/edit-flashcard";
-import { Button } from "@/components/ui/button";
-import {AddFlashcardButton} from "@/app/(main)/set/edit/[id]/add-flashcard-button";
+import {getSetById} from "@/db/queries";
 import {EditFlashcardsList} from "@/app/(main)/set/edit/[id]/edit-flashcards-list";
 import {SetTitle} from "@/app/(main)/set/edit/[id]/set-title";
 import {redirect} from "next/navigation";
@@ -13,8 +9,7 @@ interface SetPageProps {
     };
 }
 const SetEditPage = async ({ params }: SetPageProps) => {
-    const flashcards = await getFlashcardsBySet(params.id)
-    const set = await getSetById(params.id)
+    const [set] = await Promise.all([getSetById(params.id)])
 
     if (!set) {
         redirect("/")
@@ -28,7 +23,7 @@ const SetEditPage = async ({ params }: SetPageProps) => {
                 <SetTitle set={set} />
             </div>
 
-            <EditFlashcardsList initialFlashcards={flashcards} setId={params.id} />
+            <EditFlashcardsList setId={params.id} />
         </div>
     )
 }

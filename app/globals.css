@@ -14,8 +14,11 @@
   animation: shake 0.3s ease-in-out;
 }
 
-body, html {
+html, body, :root {
   min-height: 100%;
+}
+
+body {
   background-color: black;
   color: white;
 }

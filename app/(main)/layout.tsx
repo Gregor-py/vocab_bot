@@ -8,7 +8,7 @@ type Props = {
 const MainLayout = ({children}: Props) => {
 
     return (
-        <div className={"flex h-full"}>
+        <div className={"flex min-h-screen"}>
             <div className={"w-[256px] border-r-white/60 border-r"}>
                 <div>Vocab bot</div>
                 <CreateSetButton />

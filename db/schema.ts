@@ -53,3 +53,5 @@ export const flashcardsRelation = relations(flashcards, ({one}) => ({
         references: [sets.id]
     })
 }))
+
+export type Flashcard = typeof flashcards.$inferSelect;

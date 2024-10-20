@@ -11,7 +11,7 @@ export const CreateSetButton = () => {
     const createSet = async () => {
         const set = await axios.post<{setId: number}>('/api/set')
 
-        router.push(`/set/${set.data.setId}`)
+        router.push(`/set/edit/${set.data.setId}`)
     }
 
     return (

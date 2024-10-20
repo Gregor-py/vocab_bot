@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({message: "You need to be logged in."})
         }
 
-        const body = await req.json(); // Important: Parse the request body
+        const body = await req.json();
         const { setId, order } = body;
 
         const result = await db.insert(flashcards).values({

@@ -2,22 +2,37 @@
 
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
-import {flashcards} from "@/db/schema";
+import {Flashcard} from "@/db/schema";
 import {Button} from "@/components/ui/button";
 import {Trash} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useDebounce} from "use-debounce";
+import {TypeSwitcher} from "@/app/(main)/set/edit/[id]/type-switcher";
+import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
 
 type Props = {
-    flashcard: typeof flashcards.$inferSelect;
-    id: number;
-    onDelete: (id: number) => void;
-    isRemoving: boolean;
+    flashcard: Flashcard;
+    arrayId: number;
 }
 
-export const EditFlashcard = ({flashcard, id, onDelete, isRemoving}: Props) => {
+export const EditFlashcard = ({flashcard, arrayId}: Props) => {
+    const updateRemovingFlashcardId = useFlashcardsStore(state => state.updateRemovingFlashcardId)
+    const deleteFlashcard = useFlashcardsStore(state => state.deleteFlashcard)
+    const removingFlashcardId = useFlashcardsStore(state => state.removingFlashcardId)
+    const isRemoving = removingFlashcardId === flashcard.id
+
+    const onDelete = (flashcardId: number) => {
+        updateRemovingFlashcardId(flashcardId)
+        axios.delete(`/api/flashcard/${flashcardId}`)
+
+        setTimeout(() => {
+            deleteFlashcard(flashcardId)
+            updateRemovingFlashcardId(null)
+        }, 500)
+    }
+
     const [word, setWord] = useState<string>(flashcard.word ? flashcard.word : "");
     const [definition, setDefinition] = useState<string>(flashcard.definition ? flashcard.definition : "");
     const [source, setSource] = useState<string>(flashcard.source ? flashcard.source : "");
@@ -61,7 +76,8 @@ export const EditFlashcard = ({flashcard, id, onDelete, isRemoving}: Props) => {
     return (
         <div className={cn("transition-all duration-500 w-full border rounded-2xl pb-4", isRemoving ? "opacity-0" : "")}>
             <div className={"border-b py-3 px-7 flex justify-between items-center"}>
-                <span className={"font-bold"}>{id+1} | {flashcard.id}</span>
+                <span className={"font-bold"}>{arrayId+1} | {flashcard.id}</span>
+                <TypeSwitcher initialType={flashcard.type} id={flashcard.id} />
                 <Button onClick={() => onDelete(flashcard.id)} variant={"destructive"} size={"icon"}><Trash /></Button>
             </div>
 

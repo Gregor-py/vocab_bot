@@ -1,32 +1,40 @@
 "use client"
-import {flashcards as flashcardsSchema}  from "@/db/schema";
-import {useState} from "react";
 import {EditFlashcard} from "@/app/(main)/set/edit/[id]/edit-flashcard";
 import {AddFlashcardButton} from "@/app/(main)/set/edit/[id]/add-flashcard-button";
+import {useEffect} from "react";
 import axios from "axios";
-
-type Flashcard = typeof flashcardsSchema.$inferSelect;
+import {Flashcard} from "@/db/schema";
+import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
 
 type Props = {
-    initialFlashcards: Flashcard[];
     setId: number;
 }
 
-export const EditFlashcardsList = ({initialFlashcards, setId}: Props) => {
-    const [flashcards, setFlashcards] = useState<Flashcard[]>(initialFlashcards)
-    const [removingFlashcardId, setRemovingFlashcardId] = useState<null | number>();
 
-    const addNewFlashcard = (newFlashcard: Flashcard) => {
-        setFlashcards((prevState) => [...prevState, newFlashcard])
-    }
+export const EditFlashcardsList = ({setId}: Props) => {
+    const updateFlashcards = useFlashcardsStore(state => state.updateFlashcards)
+    const updateIsLoading = useFlashcardsStore(state => state.updateIsLoading)
 
-    const deleteFlashcard = (id: number) => {
-        setRemovingFlashcardId(id)
-        axios.delete(`/api/flashcard/${id}`)
+    const flashcards = useFlashcardsStore(state => state.flashcards)
+    const isLoading = useFlashcardsStore(state => state.isLoading)
 
-        setTimeout(() => {
-            setFlashcards((prevState) => prevState.filter(el => el.id !== id))
-        }, 500)
+
+    useEffect(() => {
+        if (!setId) {
+            return
+        }
+
+        updateIsLoading(true)
+
+        axios.get<{initialFlashcards: Flashcard[]}>(`/api/set/flashcards/${setId}`).then(response => {
+            updateFlashcards(response.data.initialFlashcards)
+            updateIsLoading(false)
+        })
+
+    }, [setId]);
+
+    if (isLoading) {
+        return (<div>Loading...</div>)
     }
 
     return (
@@ -34,13 +42,13 @@ export const EditFlashcardsList = ({initialFlashcards, setId}: Props) => {
             <div className={"flex flex-col gap-4 mt-10"}>
 
                 {flashcards.map((flashcard, id) => (
-                    <EditFlashcard isRemoving={removingFlashcardId === flashcard.id} onDelete={deleteFlashcard} key={flashcard.id} flashcard={flashcard} id={id} />
+                    <EditFlashcard key={flashcard.id} flashcard={flashcard} arrayId={id} />
                 ))}
 
             </div>
 
             <div className={"py-6"}>
-                <AddFlashcardButton flashcards={flashcards} setId={setId} addNewFlashcard={addNewFlashcard}/>
+                <AddFlashcardButton setId={setId}/>
             </div>
         </div>
     )
