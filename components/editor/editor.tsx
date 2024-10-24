@@ -1,39 +1,149 @@
 "use client"
 
-import React, {useCallback, useState} from 'react'
-import {createEditor, Descendant, Editor, Element, Transforms} from 'slate'
+import React, {useCallback, useMemo, useState} from 'react'
+import {createEditor, Descendant, Editor, Element, Transforms, Text} from 'slate'
 import {Editable, RenderElementProps, RenderLeafProps, Slate, withReact} from 'slate-react'
 import {
     CustomEditor as CustomEditorType,
     FormatKeys,
-    HeadingElement as HeadingElementType,
-    ParagraphElement, TextColor
+    TextColor,
+    ParagraphElement as ParagraphElementType,
+    HeadingElement as HeadingElementType
 } from "@/components/editor/editor-types";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
+import {withHistory} from "slate-history";
 
-const initialValue: Descendant[] = [
-    {
-        type: 'heading',
-        children: [{text: 'A line of text in a paragraph.'}],
-    },
-    {
-        type: 'paragraph',
-        children: [{text: 'A line of text in a paragraph.'}],
-    },
-    {
-        type: 'paragraph',
-        children: [{text: 'A line of text in a paragraph.'}],
-    },
-    {
-        type: 'paragraph',
-        children: [{text: 'A line of text in a paragraph.'}],
-    },
-    {
-        type: 'paragraph',
-        children: [{text: 'A line of text in a paragraph.'}],
-    },
-]
+const escapeHtml = (string: string) => {
+    const htmlEscapes: { [key: string]: string } = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    };
+
+    return string.replace(/[&<>"']/g, (match) => htmlEscapes[match]);
+};
+
+const serialize = (nodes: Descendant[]): string => {
+    return nodes.map((node) => serializeNode(node)).join('');
+};
+
+const serializeNode = (node: Descendant): string => {
+    if (Text.isText(node)) {
+        let text = escapeHtml(node.text);
+        const {bold, italic, underline, strike, color} = node;
+        let html = text;
+
+        if (bold) {
+            html = `<strong>${html}</strong>`;
+        }
+        if (italic) {
+            html = `<em>${html}</em>`;
+        }
+        if (underline) {
+            html = `<u>${html}</u>`;
+        }
+        if (strike) {
+            html = `<del>${html}</del>`;
+        }
+        if (color) {
+            let style = ""
+
+            if (color === "purple") {
+                style = `background-color: rgb(192 132 252)`
+            } else if (color==="gold") {
+                style = ` background-color: rgb(234 179 8)`
+            } else if (color === "green") {
+                style = `background-color: rgb(21 128 61)`
+            }
+
+            html = `<span style="${style}" data-color="${color}">${html}</span>`;
+        }
+
+        return html;
+    } else {
+        const children = node.children.map((n) => serializeNode(n)).join('');
+        switch (node.type) {
+            case 'paragraph':
+                return `<p>${children}</p>`;
+            case 'heading':
+                return `<h1>${children}</h1>`;
+            default:
+                return children;
+        }
+    }
+};
+
+const deserialize = (html: string): Descendant[] => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const body = doc.body;
+    const nodes = Array.from(body.childNodes).map(deserializeNode);
+    return nodes.length > 0 ? nodes : [{type: 'paragraph', children: [{text: ''}]}];
+};
+
+const deserializeNode = (node: Node): Descendant => {
+    if (node.nodeType === Node.TEXT_NODE) {
+        return { text: node.textContent || '' };
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as HTMLElement;
+        let children = Array.from(element.childNodes).map(deserializeNode);
+
+        // Ensure that elements have at least one child
+        if (children.length === 0) {
+            children = [{ text: '' }];
+        }
+
+        switch (element.tagName) {
+            case 'P':
+                return { type: 'paragraph', children } as ParagraphElementType;
+            case 'H1':
+                return { type: 'heading', children } as HeadingElementType;
+            case 'STRONG':
+                children = applyMarkToChildren(children, 'bold');
+                return mergeChildren(children);
+            case 'EM':
+                children = applyMarkToChildren(children, 'italic');
+                return mergeChildren(children);
+            case 'U':
+                children = applyMarkToChildren(children, 'underline');
+                return mergeChildren(children);
+            case 'DEL':
+                children = applyMarkToChildren(children, 'strike');
+                return mergeChildren(children);
+            case 'SPAN':
+                const color = element.getAttribute('data-color') as TextColor;
+                if (color) {
+                    children = applyMarkToChildren(children, 'color', color);
+                }
+                return mergeChildren(children);
+            default:
+                // For unknown elements, wrap children in a paragraph
+                return { type: 'paragraph', children } as ParagraphElementType;
+        }
+    } else {
+        // Return an empty text node for any other node types
+        return { text: '' };
+    }
+};
+
+const applyMarkToChildren = (children: Descendant[], mark: string, value: any = true): Descendant[] => {
+    return children.map((child) => {
+        if (Text.isText(child)) {
+            return {...child, [mark]: value};
+        } else {
+            return child;
+        }
+    });
+};
+
+const mergeChildren = (children: Descendant[]): Descendant => {
+    return children[0]
+};
+
 
 const CustomEditor = {
     checkMarkFormat(editor: CustomEditorType, format: FormatKeys) {
@@ -66,7 +176,7 @@ const CustomEditor = {
 
     isHeadingBlockActive(editor: CustomEditorType) {
         const [match] = Editor.nodes(editor, {
-            match: (node) =>  Element.isElement(node) && node.type === 'heading'
+            match: (node) => Element.isElement(node) && node.type === 'heading'
         })
 
         console.log(match)
@@ -78,13 +188,18 @@ const CustomEditor = {
         const isActive = CustomEditor.isHeadingBlockActive(editor)
         Transforms.setNodes(
             editor,
-            { type: isActive ? undefined : 'heading' },
+            {type: isActive ? undefined : 'heading'},
         )
     },
 }
 
 export const EditorComponent = () => {
-    const [editor] = useState(() => withReact(createEditor()))
+    const initialValue = useMemo(() => {
+        const html = localStorage.getItem('content');
+        return html ? deserialize(html) : [{ type: 'paragraph', children: [{ text: '' }] }] as Descendant[];
+    }, []);
+
+    const [editor] = useState(() => withHistory(withReact(createEditor())))
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (!event.ctrlKey) {
@@ -120,7 +235,18 @@ export const EditorComponent = () => {
     }, [])
 
     return (
-        <Slate editor={editor} initialValue={initialValue}>
+        <Slate
+            editor={editor}
+            initialValue={initialValue}
+            onChange={(value) => {
+                const isAstChange = editor.operations.some((op) => op.type !== 'set_selection');
+                if (isAstChange) {
+                    const content = serialize(value);
+                    localStorage.setItem('content', content);
+                    localStorage.setItem("content_json", JSON.stringify(value))
+                }
+            }}
+        >
             <Button onMouseDown={(event) => {
                 event.preventDefault()
                 CustomEditor.toggleMarkFormat(editor, "bold")
@@ -161,6 +287,12 @@ export const EditorComponent = () => {
                 CustomEditor.toggleMarkColor(editor, "green")
             }}>
                 Green
+            </Button>
+
+            <Button onMouseDown={(event) => {
+                event.preventDefault()
+            }}>
+                Back
             </Button>
 
             <Editable

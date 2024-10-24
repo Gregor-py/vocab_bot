@@ -1,7 +1,12 @@
 import {BaseEditor, BaseText} from 'slate'
 import { ReactEditor } from 'slate-react'
 
-export type CustomEditor = BaseEditor & ReactEditor
+export type CustomEditor = BaseEditor & ReactEditor & {
+    history: History
+    undo: () => void
+    redo: () => void
+    writeHistory: (stack: 'undos' | 'redos', batch: any) => void
+}
 
 export type ParagraphElement = {
     type: 'paragraph'
