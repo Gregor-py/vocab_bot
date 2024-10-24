@@ -5,16 +5,16 @@ import {useEffect, useState} from "react";
 import {useDebounce} from "use-debounce";
 import axios from "axios";
 import {Textarea} from "@/components/ui/textarea";
+import {EditorComponent} from "@/components/editor/editor";
 
 type Props = {
     initialValue: string;
     title: string;
     fieldName: string;
     flashcardId: number;
-    type?: "input" | "textarea"
 }
 
-export const FlashcardInput = ({initialValue, title, fieldName, flashcardId, type="input"}: Props) => {
+export const FlashcardInput = ({initialValue, title, fieldName, flashcardId}: Props) => {
     const [value, setValue] = useState(initialValue)
     const [debouncedValue] = useDebounce(value, 1000);
 
@@ -30,24 +30,11 @@ export const FlashcardInput = ({initialValue, title, fieldName, flashcardId, typ
 
     return (
         <div>
-            {type === "input" ?
-                <>
-                    <Input
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        placeholder={". . ."}
-                        className={"placeholder:text-gray-400 rounded-none px-0 border-0 border-b-white border-b-2 focus:border-amber-300 transition-transform"}
-                    />
-                </>
-                : <>
-                    <Textarea
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        placeholder={". . ."}
-                        className={"placeholder:text-gray-400 rounded-none px-0 border-0 border-b-white border-b-2 focus:border-amber-300 transition-transform"}
-                    />
-                </>
-            }
+            <EditorComponent
+                initialText={initialValue}
+                setValue={(value) => setValue(value)}
+                className={"py-[5px] text-lg border-0 border-b-white border-b-2"}
+            />
             <span>{title}</span>
         </div>
     )

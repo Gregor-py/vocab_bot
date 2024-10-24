@@ -6,16 +6,21 @@ import {Editable, RenderElementProps, RenderLeafProps, Slate, withReact} from 's
 import {cn} from "@/lib/utils";
 import {withHistory} from "slate-history";
 import {CustomEditor, deserialize, serialize} from './editor-utils';
-import {EditorButtons} from "@/components/editor/editor-buttons";
+import {useEditorStore} from "@/components/editor/useEditorStore";
 
+type Props = {
+    className?: string,
+    setValue?: (value: string) => void,
+    initialText?: string
+}
 
-export const EditorComponent = () => {
+export const EditorComponent = ({className, setValue, initialText}: Props) => {
     const initialValue = useMemo(() => {
-        const html = localStorage.getItem('content');
-        return html ? deserialize(html) : [{ type: 'paragraph', children: [{ text: '' }] }] as Descendant[];
+        return initialText ? deserialize(initialText) : [{ type: 'paragraph', children: [{ text: '' }] }] as Descendant[];
     }, []);
 
     const [editor] = useState(() => withHistory(withReact(createEditor())))
+    const updateCurrentEditor = useEditorStore(state => state.updateCurrentEditor)
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (!event.ctrlKey) {
@@ -53,31 +58,36 @@ export const EditorComponent = () => {
         const isAstChange = editor.operations.some((op) => op.type !== 'set_selection');
         if (isAstChange) {
             const content = serialize(value);
-            localStorage.setItem('content', content);
-            localStorage.setItem("content_json", JSON.stringify(value))
+            if (setValue) {
+                setValue(content)
+            }
         }
     }
 
     return (
-        <Slate
-            editor={editor}
-            initialValue={initialValue}
-            onChange={handleChange}
-        >
-            <EditorButtons editor={editor} />
-            <Editable
-                className={"p-5 text-lg"}
-                renderElement={renderElement}
-                renderLeaf={renderLeaf}
-                onKeyDown={onKeyDown}
-            />
-        </Slate>
+        <div className={className}>
+            <Slate
+                editor={editor}
+                initialValue={initialValue}
+                onChange={handleChange}
+            >
+                <Editable
+                    className={"focus:outline-none"}
+                    renderElement={renderElement}
+                    renderLeaf={renderLeaf}
+                    onKeyDown={onKeyDown}
+                    onMouseDown={() => {
+                        updateCurrentEditor(editor)
+                    }}
+                />
+            </Slate>
+        </div>
     )
 }
 
 const HeadingElement = (props: RenderElementProps) => {
     return (
-        <p className={"text-5xl py-3"} {...props.attributes}>{props.children}</p>
+        <p className={"text-5xl py-3 leading-[1.29]"} {...props.attributes}>{props.children}</p>
     )
 }
 

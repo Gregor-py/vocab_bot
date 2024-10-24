@@ -4,20 +4,24 @@ import React from "react";
 import {CustomEditor as CustomEditorType} from "@/components/editor/editor-types";
 
 type Props = {
-    editor: CustomEditorType
+    editor: CustomEditorType | null;
 }
 
 export const EditorButtons = ({editor}: Props) => {
     return (
-        <>
+        <div className={"bg-amber-300 z-20"}>
             <Button onMouseDown={(event) => {
                 event.preventDefault()
+
+                if (!editor) return;
+
                 CustomEditor.toggleMarkFormat(editor, "bold")
             }}>
                 Bold
             </Button>
             <Button onMouseDown={(event) => {
                 event.preventDefault()
+                if (!editor) return;
                 CustomEditor.isHeadingBlockActive(editor)
                 CustomEditor.toggleHeadingType(editor)
             }}>
@@ -26,6 +30,7 @@ export const EditorButtons = ({editor}: Props) => {
 
             <Button onMouseDown={(event) => {
                 event.preventDefault()
+                if (!editor) return;
                 CustomEditor.toggleMarkFormat(editor, "strike")
             }}>
                 Strike
@@ -33,6 +38,7 @@ export const EditorButtons = ({editor}: Props) => {
 
             <Button onMouseDown={(event) => {
                 event.preventDefault()
+                if (!editor) return;
                 CustomEditor.toggleMarkColor(editor, "purple")
             }}>
                 Purple
@@ -40,6 +46,7 @@ export const EditorButtons = ({editor}: Props) => {
 
             <Button onMouseDown={(event) => {
                 event.preventDefault()
+                if (!editor) return;
                 CustomEditor.toggleMarkColor(editor, "gold")
             }}>
                 Gold
@@ -47,16 +54,11 @@ export const EditorButtons = ({editor}: Props) => {
 
             <Button onMouseDown={(event) => {
                 event.preventDefault()
+                if (!editor) return;
                 CustomEditor.toggleMarkColor(editor, "green")
             }}>
                 Green
             </Button>
-
-            <Button onMouseDown={(event) => {
-                event.preventDefault()
-            }}>
-                Back
-            </Button>
-        </>
+        </div>
     )
 }
