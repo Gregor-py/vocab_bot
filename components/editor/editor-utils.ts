@@ -135,6 +135,14 @@ export const mergeChildren = (children: Descendant[]): Descendant => {
 
 
 export const CustomEditor = {
+    removeAllFormating(editor: CustomEditorType) {
+        Editor.removeMark(editor, "bold")
+        Editor.removeMark(editor, "italic")
+        Editor.removeMark(editor, "underline")
+        Editor.removeMark(editor, "strike")
+        Editor.removeMark(editor, 'color')
+    },
+
     checkMarkFormat(editor: CustomEditorType, format: FormatKeys) {
         const marks = Editor.marks(editor)
         return marks ? marks[format] === true : false

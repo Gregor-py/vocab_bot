@@ -1,64 +1,103 @@
 import {Button} from "@/components/ui/button";
 import {CustomEditor} from "@/components/editor/editor-utils";
 import React from "react";
-import {CustomEditor as CustomEditorType} from "@/components/editor/editor-types";
+import {CustomEditor as CustomEditorType, TextColor} from "@/components/editor/editor-types";
+import {Bold, BoldIcon, Heading1, Paintbrush, RemoveFormatting, Strikethrough} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
     editor: CustomEditorType | null;
 }
 
+type Color = {
+    value: TextColor;
+    color: string;
+    hover: string;
+}
+
 export const EditorButtons = ({editor}: Props) => {
+    const colors: Color[] = [
+        {
+            value: "green",
+            color: "bg-green-700",
+            hover: "hover:bg-green-700/60"
+        },
+        {
+            value: "gold",
+            color: "bg-yellow-500",
+            hover: "hover:bg-yellow-500/60"
+        },
+        {
+            value: "purple",
+            color: "bg-purple-400",
+            hover: "hover:bg-purple-400/60"
+        }
+    ]
+
     return (
-        <div className={"bg-amber-300 z-20"}>
-            <Button onMouseDown={(event) => {
-                event.preventDefault()
-
-                if (!editor) return;
-
-                CustomEditor.toggleMarkFormat(editor, "bold")
-            }}>
-                Bold
+        <div className={"flex gap-1"}>
+            <Button
+                variant={"icon"}
+                size={"icon"}
+                onMouseDown={(event) => {
+                    event.preventDefault()
+                    if (!editor) return;
+                    CustomEditor.removeAllFormating(editor)
+                }}
+            >
+                <RemoveFormatting />
             </Button>
-            <Button onMouseDown={(event) => {
-                event.preventDefault()
-                if (!editor) return;
-                CustomEditor.isHeadingBlockActive(editor)
-                CustomEditor.toggleHeadingType(editor)
-            }}>
-                Heading
+            <Button
+                variant={"icon"}
+                size={"icon"}
+                onMouseDown={(event) => {
+                    event.preventDefault()
+                    if (!editor) return;
+                    CustomEditor.toggleMarkFormat(editor, "bold")
+                }}
+            >
+                <BoldIcon/>
+            </Button>
+            <Button
+                variant={"icon"}
+                size={"icon"}
+                onMouseDown={(event) => {
+                    event.preventDefault()
+                    if (!editor) return;
+                    CustomEditor.isHeadingBlockActive(editor)
+                    CustomEditor.toggleHeadingType(editor)
+                }}
+            >
+                <Heading1/>
+            </Button
+            >
+
+            <Button
+                variant={"icon"}
+                size={"icon"}
+                onMouseDown={(event) => {
+                    event.preventDefault()
+                    if (!editor) return;
+                    CustomEditor.toggleMarkFormat(editor, "strike")
+                }}
+            >
+                <Strikethrough/>
             </Button>
 
-            <Button onMouseDown={(event) => {
-                event.preventDefault()
-                if (!editor) return;
-                CustomEditor.toggleMarkFormat(editor, "strike")
-            }}>
-                Strike
-            </Button>
-
-            <Button onMouseDown={(event) => {
-                event.preventDefault()
-                if (!editor) return;
-                CustomEditor.toggleMarkColor(editor, "purple")
-            }}>
-                Purple
-            </Button>
-
-            <Button onMouseDown={(event) => {
-                event.preventDefault()
-                if (!editor) return;
-                CustomEditor.toggleMarkColor(editor, "gold")
-            }}>
-                Gold
-            </Button>
-
-            <Button onMouseDown={(event) => {
-                event.preventDefault()
-                if (!editor) return;
-                CustomEditor.toggleMarkColor(editor, "green")
-            }}>
-                Green
-            </Button>
+            {colors.map((color) => (
+                <Button
+                    variant={"icon"}
+                    className={cn(color.color, color.hover)}
+                    size={"icon"}
+                    onMouseDown={(event) => {
+                        event.preventDefault()
+                        if (!editor) return;
+                        CustomEditor.toggleMarkColor(editor, color.value)
+                    }}
+                >
+                    <Paintbrush/>
+                </Button>
+            ))}
         </div>
     )
 }

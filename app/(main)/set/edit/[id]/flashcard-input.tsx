@@ -35,7 +35,7 @@ export const FlashcardInput = ({initialValue, title, fieldName, flashcardId}: Pr
                 setValue={(value) => setValue(value)}
                 className={"py-[5px] text-lg border-0 border-b-white border-b-2"}
             />
-            <span>{title}</span>
+            <span className={"text-blue-400"}>{title}</span>
         </div>
     )
 }
