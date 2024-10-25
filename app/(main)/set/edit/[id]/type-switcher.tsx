@@ -2,24 +2,27 @@ import {useState} from 'react';
 import clsx from 'clsx';
 import {cn} from "@/lib/utils";
 import axios from "axios";
-import {FlashcardType} from "@/db/schema";
+import {Flashcard, FlashcardType} from "@/db/schema";
 import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
 
 type Props = {
     type: FlashcardType,
     flashcardId: number;
+    isSaving: boolean;
 }
 
-export const TypeSwitcher = ({type, flashcardId}: Props) => {
+export const TypeSwitcher = ({type, flashcardId, isSaving}: Props) => {
     const [isLoading, setIsLoading] = useState(false);
-    const updateFlashcardType = useFlashcardsStore(state => state.updateFlashcardType)
+    const updateFlashcard = useFlashcardsStore(state => state.updateFlashcard)
 
     const handleToggle = async () => {
         setIsLoading(true);
 
         const nextValue = type === "structured" ? "unstructured" : "structured"
-        await axios.put(`/api/flashcard/${flashcardId}`, {"type": nextValue})
-        updateFlashcardType(flashcardId, nextValue)
+        const {flashcard} = await axios.put<{message: string, flashcard: Flashcard}>(`/api/flashcard/change-type/${flashcardId}`, {"type": nextValue})
+            .then(response => response.data)
+
+        updateFlashcard(flashcard)
 
         setIsLoading(false)
     };
@@ -29,7 +32,7 @@ export const TypeSwitcher = ({type, flashcardId}: Props) => {
             <span className={clsx('text-lg font-medium')}>Structured</span>
             <button
                 onClick={handleToggle}
-                disabled={isLoading}
+                disabled={isLoading || isSaving}
                 className={cn(
                     'w-16 h-8 flex items-center rounded-full p-1 transition-colors duration-300',
                     type === 'unstructured' ? 'bg-gray-500' : 'bg-blue-400',

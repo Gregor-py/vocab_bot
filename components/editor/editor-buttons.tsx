@@ -2,8 +2,8 @@ import {Button} from "@/components/ui/button";
 import {CustomEditor} from "@/components/editor/editor-utils";
 import React from "react";
 import {CustomEditor as CustomEditorType, TextColor} from "@/components/editor/editor-types";
-import {Bold, BoldIcon, Heading1, Paintbrush, RemoveFormatting, Strikethrough} from "lucide-react";
-import { cn } from "@/lib/utils";
+import {BoldIcon, Heading1, Paintbrush, RemoveFormatting, Strikethrough} from "lucide-react";
+import {cn} from "@/lib/utils";
 
 type Props = {
     editor: CustomEditorType | null;
@@ -86,6 +86,7 @@ export const EditorButtons = ({editor}: Props) => {
 
             {colors.map((color) => (
                 <Button
+                    key={color.value}
                     variant={"icon"}
                     className={cn(color.color, color.hover)}
                     size={"icon"}

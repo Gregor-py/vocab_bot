@@ -1,10 +1,8 @@
 "use client"
 
-import {Input} from "@/components/ui/input";
 import {useEffect, useState} from "react";
 import {useDebounce} from "use-debounce";
 import axios from "axios";
-import {Textarea} from "@/components/ui/textarea";
 import {EditorComponent} from "@/components/editor/editor";
 
 type Props = {
@@ -12,21 +10,28 @@ type Props = {
     title: string;
     fieldName: string;
     flashcardId: number;
+    setSaving: (state: boolean) => void;
 }
 
-export const FlashcardInput = ({initialValue, title, fieldName, flashcardId}: Props) => {
+export const FlashcardInput = ({initialValue, title, fieldName, flashcardId, setSaving}: Props) => {
     const [value, setValue] = useState(initialValue)
     const [debouncedValue] = useDebounce(value, 1000);
 
     const updateFlashcard = () => {
         if (value) {
-            axios.put(`/api/flashcard/${flashcardId}`, { [fieldName]: value })
+            axios.put(`/api/flashcard/${flashcardId}`, { [fieldName]: value }).then(() => {
+                setSaving(false)
+            })
         }
     };
 
     useEffect(() => {
         updateFlashcard();
     }, [debouncedValue]);
+
+    useEffect(() => {
+        setSaving(true);
+    }, [value]);
 
     return (
         <div>
