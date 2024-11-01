@@ -13,7 +13,7 @@ const DashboardPage = async () => {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
                     {sets.map((set) => (
-                        <Link href={`/set/edit/${set.id}`} key={set.id}>
+                        <Link href={`/set/learn/${set.id}`} key={set.id}>
                             <div
                                 style={{ backgroundColor: set.setTheme.mainBg || "" }}
                                 className={cn(

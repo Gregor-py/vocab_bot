@@ -29,15 +29,14 @@ export const FlashcardInput = ({initialValue, title, fieldName, flashcardId, set
         updateFlashcard();
     }, [debouncedValue]);
 
-    useEffect(() => {
-        setSaving(true);
-    }, [value]);
-
     return (
         <div>
             <EditorComponent
                 initialText={initialValue}
-                setValue={(value) => setValue(value)}
+                setValue={(value) => {
+                    setValue(value)
+                    setSaving(true)
+                }}
                 className={"py-[5px] text-lg border-0 border-b-white border-b-2"}
             />
             <span className={"text-blue-400"}>{title}</span>

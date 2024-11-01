@@ -5,7 +5,6 @@ import {Button} from "@/components/ui/button";
 import {Loader, Trash} from "lucide-react";
 import {cn} from "@/lib/utils";
 import axios from "axios";
-import {TypeSwitcher} from "@/app/(main)/set/edit/[id]/type-switcher";
 import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
 import {FlashcardInput} from "@/app/(main)/set/edit/[id]/flashcard-input";
 import {EditorButtons} from "@/components/editor/editor-buttons";
@@ -59,57 +58,18 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
             <div className={"border-b py-3 px-7 flex justify-between items-center"}>
                 <span className={"font-bold"}>{arrayId + 1} | {flashcard.id}</span>
                 <Loader className={cn("animate-spin transition-all", isSaving ? "opacity-100" : "opacity-0")}/>
-                <TypeSwitcher isSaving={isSaving} type={flashcard.type} flashcardId={flashcard.id}/>
                 <EditorButtons editor={currentEditor}/>
                 <Button onClick={() => onDelete(flashcard.id)} variant={"destructive"} size={"icon"}><Trash/></Button>
             </div>
 
-            {flashcard.type === "structured" && <>
-                <div className={"px-7 py-6 flex gap-4"}>
-                    <div className={"w-[35%]"}>
-                        <FlashcardInput
-                            initialValue={flashcard.word || ""}
-                            title={"Word"}
-                            fieldName={"word"}
-                            flashcardId={flashcard.id}
-                            setSaving={(state) => setIsSavingHash(prevState => ({...prevState, word: state}))}
-                        />
-                    </div>
-                    <div className={"w-[65%]"}>
-                        <FlashcardInput
-                            initialValue={flashcard.definition || ""}
-                            title={"Definition"}
-                            fieldName={"definition"}
-                            flashcardId={flashcard.id}
-                            setSaving={(state) => setIsSavingHash(prevState => ({...prevState, definition: state}))}
-                        />
-                        <FlashcardInput
-                            initialValue={flashcard.source || ""}
-                            title={"Source"}
-                            fieldName={"source"}
-                            flashcardId={flashcard.id}
-                            setSaving={(state) => setIsSavingHash(prevState => ({...prevState, source: state}))}
-                        />
-                        <FlashcardInput
-                            initialValue={flashcard.examples || ""}
-                            title={"Examples"}
-                            fieldName={"examples"}
-                            flashcardId={flashcard.id}
-                            setSaving={(state) => setIsSavingHash(prevState => ({...prevState, examples: state}))}
-                        />
-                    </div>
-                </div>
-            </>}
-
-            {flashcard.type === "unstructured" && <>
                 <div className={"px-7 py-6 flex gap-4"}>
                     <div className={"w-[20%]"}>
                         <FlashcardInput
-                            initialValue={flashcard.frontSide || ""}
-                            title={"Front side"}
-                            fieldName={"frontSide"}
+                            initialValue={flashcard.term || ""}
+                            title={"Term"}
+                            fieldName={"term"}
                             flashcardId={flashcard.id}
-                            setSaving={(state) => setIsSavingHash(prevState => ({...prevState, frontSide: state}))}
+                            setSaving={(state) => setIsSavingHash(prevState => ({...prevState, term: state}))}
                         />
                     </div>
                     <div className={"w-[80%]"}>
@@ -122,7 +82,6 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
                         />
                     </div>
                 </div>
-            </>}
         </div>
     )
 }

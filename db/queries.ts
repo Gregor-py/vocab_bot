@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { cache } from "react";
 import {db} from "@/db/index";
-import {eq} from "drizzle-orm";
+import {and, eq} from "drizzle-orm";
 import {flashcards, sets} from "@/db/schema";
 
 export const getUsersSets = cache(async () => {
@@ -42,7 +42,12 @@ export const getSetById = cache(async (setId: number) => {
     }
 
     return db.query.sets.findFirst({
-        where: eq(sets.id, setId),
+        where: and(eq(sets.id, setId), eq(sets.userId, userId)),
+        with: {
+            setTheme: true,
+            language: true,
+            flashcards: true
+        }
     })
 })
 
