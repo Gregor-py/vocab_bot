@@ -1,4 +1,4 @@
-import {createFlashcards, getSetById} from "@/db/queries";
+import {getSetById} from "@/db/queries";
 import {FlashcardsList} from "@/app/(main)/set/edit/[id]/flashcards-list";
 import {SetTitle} from "@/app/(main)/set/edit/[id]/set-title";
 import {redirect} from "next/navigation";

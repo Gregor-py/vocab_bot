@@ -27,8 +27,6 @@ export const EditorComponent = ({className, setValue, initialText}: Props) => {
             return
         }
 
-        event.preventDefault()
-
         if (event.ctrlKey && event.key === 'b') {
             CustomEditor.toggleMarkFormat(editor, "bold")
         }

@@ -1,9 +1,7 @@
 import {getSetById} from "@/db/queries";
 import {redirect} from "next/navigation";
-import parse from 'html-react-parser';
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
 
 interface SetPageProps {
     params: {
@@ -27,6 +25,11 @@ const LearnSetPage = async ({params}: SetPageProps) => {
                 <Link href={`/set/learn/${params.id}`} >
                     <Button>
                         Learn Flashcards
+                    </Button>
+                </Link>
+                <Link href={`/set/edit/${params.id}`} >
+                    <Button>
+                        Edit Flashcards
                     </Button>
                 </Link>
             </div>

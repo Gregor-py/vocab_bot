@@ -47,3 +47,7 @@ export const flashcardsRelation = relations(flashcards, ({one}) => ({
 }))
 
 export type Flashcard = typeof flashcards.$inferSelect;
+export type SetType = typeof sets.$inferSelect & {
+    language: typeof languages.$inferSelect;
+    flashcards: Flashcard[];
+};
