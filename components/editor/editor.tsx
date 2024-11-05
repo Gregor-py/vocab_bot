@@ -41,11 +41,7 @@ export const EditorComponent = ({className, setValue, initialText}: Props) => {
     }
 
     const renderElement = useCallback((props: RenderElementProps) => {
-        if (props.element.type === 'heading') {
-            return <HeadingElement {...props} />
-        } else {
-            return <DefaultElement {...props} />
-        }
+        return <DefaultElement {...props} />
     }, [])
 
     const renderLeaf = useCallback((props: RenderLeafProps) => {
@@ -80,12 +76,6 @@ export const EditorComponent = ({className, setValue, initialText}: Props) => {
                 />
             </Slate>
         </div>
-    )
-}
-
-const HeadingElement = (props: RenderElementProps) => {
-    return (
-        <p className={"text-5xl py-3 leading-[1.29]"} {...props.attributes}>{props.children}</p>
     )
 }
 

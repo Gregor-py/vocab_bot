@@ -58,19 +58,6 @@ export const EditorButtons = ({editor}: Props) => {
             >
                 <BoldIcon/>
             </Button>
-            <Button
-                variant={"icon"}
-                size={"icon"}
-                onMouseDown={(event) => {
-                    event.preventDefault()
-                    if (!editor) return;
-                    CustomEditor.isHeadingBlockActive(editor)
-                    CustomEditor.toggleHeadingType(editor)
-                }}
-            >
-                <Heading1/>
-            </Button
-            >
 
             <Button
                 variant={"icon"}

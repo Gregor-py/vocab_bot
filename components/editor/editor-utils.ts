@@ -1,7 +1,7 @@
-import {Descendant, Editor, Element, Text, Transforms} from "slate";
+import {Descendant, Editor, Text} from "slate";
 import {
-    CustomEditor as CustomEditorType, FormatKeys,
-    HeadingElement as HeadingElementType,
+    CustomEditor as CustomEditorType,
+    FormatKeys,
     ParagraphElement as ParagraphElementType,
     TextColor
 } from "@/components/editor/editor-types";
@@ -60,8 +60,6 @@ export const serializeNode = (node: Descendant): string => {
         switch (node.type) {
             case 'paragraph':
                 return `<p>${children}</p>`;
-            case 'heading':
-                return `<h1>${children}</h1>`;
             default:
                 return children;
         }
@@ -91,8 +89,6 @@ export const deserializeNode = (node: Node): Descendant => {
         switch (element.tagName) {
             case 'P':
                 return { type: 'paragraph', children } as ParagraphElementType;
-            case 'H1':
-                return { type: 'heading', children } as HeadingElementType;
             case 'STRONG':
                 children = applyMarkToChildren(children, 'bold');
                 return mergeChildren(children);
@@ -169,23 +165,5 @@ export const CustomEditor = {
         } else {
             Editor.addMark(editor, 'color', color)
         }
-    },
-
-    isHeadingBlockActive(editor: CustomEditorType) {
-        const [match] = Editor.nodes(editor, {
-            match: (node) => Element.isElement(node) && node.type === 'heading'
-        })
-
-        console.log(match)
-
-        return !!match
-    },
-
-    toggleHeadingType(editor: CustomEditorType) {
-        const isActive = CustomEditor.isHeadingBlockActive(editor)
-        Transforms.setNodes(
-            editor,
-            {type: isActive ? undefined : 'heading'},
-        )
     },
 }

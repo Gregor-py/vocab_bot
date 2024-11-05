@@ -13,12 +13,7 @@ export type ParagraphElement = {
     children: CustomText[]
 }
 
-export type HeadingElement = {
-    type: 'heading'
-    children: CustomText[]
-}
-
-export type CustomElement = ParagraphElement | HeadingElement
+export type CustomElement = ParagraphElement
 
 export type TextColor = "purple" | "gold" | "green"
 
