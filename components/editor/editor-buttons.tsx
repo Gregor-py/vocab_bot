@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {CustomEditor} from "@/components/editor/editor-utils";
 import React from "react";
 import {CustomEditor as CustomEditorType, TextColor} from "@/components/editor/editor-types";
-import {BoldIcon, Heading1, Paintbrush, RemoveFormatting, Strikethrough} from "lucide-react";
+import {BoldIcon, Paintbrush, RemoveFormatting, Strikethrough} from "lucide-react";
 import {cn} from "@/lib/utils";
 
 type Props = {

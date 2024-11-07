@@ -1,7 +1,8 @@
 "use client"
 
 import parse from 'html-react-parser';
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
+import {cn} from "@/lib/utils";
 
 type FlipCard = {
     frontText: string;
@@ -11,7 +12,18 @@ type FlipCard = {
 
 export const FlipCard = ({ frontText, backText, active }: FlipCard) => {
     const [isFlipped, setIsFlipped] = useState(false);
+    const [backsideWithScroll, setBackSideWithScroll] = useState(false);
+    const [backsideScroll, setBacksideScroll] = useState(0);
+    const ref = useRef<HTMLDivElement>(null)
 
+    const handleFlip = () => {
+        if (!active) {
+            return
+        }
+
+        setIsFlipped(prev => !prev);
+    }
+    
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
             if (e.code === 'Space') {
@@ -22,21 +34,24 @@ export const FlipCard = ({ frontText, backText, active }: FlipCard) => {
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [isFlipped]);
+    }, [isFlipped, handleFlip]);
+    
 
-    const handleFlip = () => {
-        if (!active) {
-            return
+    useEffect(() => {
+        if (!ref.current) {
+            return;
         }
 
-        setIsFlipped(prev => !prev);
-    }
+        if (ref.current.scrollHeight > ref.current.clientHeight) {
+            setBackSideWithScroll(true);
+        }
+    }, []);
 
     return (
         <div className="w-full" style={{ perspective: "2000px", userSelect: "none" }}>
             <div
                 onClick={handleFlip}
-                className="relative min-h-screen cursor-pointer"
+                className="relative cursor-pointer min-h-[600px] max-h-[600px]"
                 style={{
                     transformStyle: "preserve-3d",
                     transition: "transform 0.4s linear",
@@ -44,7 +59,7 @@ export const FlipCard = ({ frontText, backText, active }: FlipCard) => {
                 }}
             >
                 <div
-                    className="absolute w-full h-full bg-neutral-900 p-4 flex items-center justify-center rounded-xl shadow-lg text-6xl"
+                    className="absolute w-full min-h-full bg-neutral-900 p-6 flex items-center justify-center rounded-xl shadow-lg text-6xl right-0 top-0"
                     style={{
                         backfaceVisibility: "hidden",
                         WebkitBackfaceVisibility: "hidden"
@@ -56,16 +71,23 @@ export const FlipCard = ({ frontText, backText, active }: FlipCard) => {
                 </div>
 
                 <div
-                    className="absolute w-full h-full bg-neutral-900 p-4 flex items-center justify-center rounded-xl shadow-lg overflow-auto"
+                    className="absolute overflow-auto w-full max-h-[600px] justify-center min-h-full bg-neutral-900 p-6 flex rounded-xl shadow-lg text-2xl right-0 top-0"
                     style={{
                         backfaceVisibility: "hidden",
                         WebkitBackfaceVisibility: "hidden",
                         transform: "rotateX(180deg)"
                     }}
+                    ref={ref}
+                    onScroll={() => {
+                        if (ref.current) {
+                            setBacksideScroll(ref.current.scrollTop)
+                        }
+                    }}
                 >
-                    <div>
-                        {parse(backText)}{parse(backText)}
+                    <div className={"h-full relative pb-8"}>
+                        {parse(backText)}
                     </div>
+                    <div className={cn(backsideWithScroll && backsideScroll <= 0 ? "opacity-100" : "opacity-0","h-20 absolute bottom-0 w-full bg-gradient-to-t from-neutral-900 to-transparent")}/>
                 </div>
             </div>
         </div>

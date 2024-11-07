@@ -1,5 +1,5 @@
-import {BaseEditor, BaseText} from 'slate'
-import { ReactEditor } from 'slate-react'
+import {BaseEditor} from 'slate'
+import {ReactEditor} from 'slate-react'
 
 export type CustomEditor = BaseEditor & ReactEditor & {
     history: History
