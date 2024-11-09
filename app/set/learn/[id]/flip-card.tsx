@@ -84,7 +84,7 @@ export const FlipCard = ({ frontText, backText, active }: FlipCard) => {
                         }
                     }}
                 >
-                    <div className={"h-full relative pb-8"}>
+                    <div className={"h-full relative pb-8 paragraph-min-height"}>
                         {parse(backText)}
                     </div>
                     <div className={cn(backsideWithScroll && backsideScroll <= 0 ? "opacity-100" : "opacity-0","h-20 absolute bottom-0 w-full bg-gradient-to-t from-neutral-900 to-transparent")}/>

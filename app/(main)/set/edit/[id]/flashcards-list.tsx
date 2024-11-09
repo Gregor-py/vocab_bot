@@ -1,10 +1,12 @@
 "use client"
 import {EditFlashcard} from "@/app/(main)/set/edit/[id]/edit-flashcard";
 import {AddFlashcardButton} from "@/app/(main)/set/edit/[id]/add-flashcard-button";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {Flashcard} from "@/db/schema";
 import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
+import { Button } from "@/components/ui/button";
+import {cn} from "@/lib/utils";
 
 type Props = {
     setId: number;
@@ -21,7 +23,7 @@ export const FlashcardsList = ({setId}: Props) => {
 
     useEffect(() => {
         if (!setId) {
-            return
+            return;
         }
 
         updateIsLoading(true)
@@ -39,7 +41,7 @@ export const FlashcardsList = ({setId}: Props) => {
 
     return (
         <div>
-            <div className={"flex flex-col gap-4 mt-10"}>
+            <div className={"flex flex-col"}>
 
                 {flashcards.map((flashcard, id) => (
                     <EditFlashcard key={flashcard.id} flashcard={flashcard} arrayId={id} />

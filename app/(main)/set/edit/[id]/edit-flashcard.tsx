@@ -10,6 +10,7 @@ import {FlashcardInput} from "@/app/(main)/set/edit/[id]/flashcard-input";
 import {EditorButtons} from "@/components/editor/editor-buttons";
 import {useEditorStore} from "@/components/editor/useEditorStore";
 import {useState} from "react";
+import AnimateHeight, {Height} from "react-animate-height";
 
 type Props = {
     flashcard: Flashcard;
@@ -17,11 +18,7 @@ type Props = {
 }
 
 type SavingHash = {
-    word: boolean;
-    definition: boolean;
-    source: boolean;
-    examples: boolean;
-    frontSide: boolean;
+    term: boolean;
     backSide: boolean;
 }
 
@@ -30,14 +27,11 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
     const deleteFlashcard = useFlashcardsStore(state => state.deleteFlashcard)
     const removingFlashcardId = useFlashcardsStore(state => state.removingFlashcardId)
     const isRemoving = removingFlashcardId === flashcard.id
+    const [height, setHeight] = useState<Height>("auto")
 
     const [savingHash, setIsSavingHash] = useState<SavingHash>({
         backSide: false,
-        definition: false,
-        frontSide: false,
-        examples: false,
-        source: false,
-        word: false
+        term: false,
     })
 
     const isSaving = Object.values(savingHash).includes(true)
@@ -46,21 +40,29 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
 
     const onDelete = (flashcardId: number) => {
         updateRemovingFlashcardId(flashcardId)
+        setHeight(0)
         axios.delete(`/api/flashcard/${flashcardId}`)
         setTimeout(() => {
             deleteFlashcard(flashcardId)
             updateRemovingFlashcardId(null)
-        }, 500)
+        }, 300)
     }
 
     return (
-        <div className={cn("transition-all duration-500 w-full border rounded-2xl pb-4", isRemoving ? "opacity-0" : "")}>
-            <div className={"border-b py-3 px-7 flex justify-between items-center"}>
-                <span className={"font-bold"}>{arrayId + 1} | {flashcard.id}</span>
-                <Loader className={cn("animate-spin transition-all", isSaving ? "opacity-100" : "opacity-0")}/>
-                <EditorButtons editor={currentEditor}/>
-                <Button onClick={() => onDelete(flashcard.id)} variant={"destructive"} size={"icon"}><Trash/></Button>
-            </div>
+        <AnimateHeight height={height} duration={300}>
+            <div className={cn("w-full border rounded-2xl pb-4 overflow-hidden max-h-full transition-all duration-500 mt-6", isRemoving ? "opacity-0 mt-0" : "opacity-100")}>
+                <div className={"border-b py-3 px-7 flex justify-between items-center"}>
+                    <span className={"font-bold"}>{arrayId + 1}</span>
+                    <Loader className={cn("animate-spin transition-all", isSaving ? "opacity-100" : "opacity-0")}/>
+                    <EditorButtons editor={currentEditor}/>
+                    <Button
+                        onClick={() => onDelete(flashcard.id)}
+                        variant={"destructive"} size={"icon"}
+                        disabled={isRemoving}
+                    >
+                        <Trash/>
+                    </Button>
+                </div>
 
                 <div className={"px-7 py-6 flex gap-4"}>
                     <div className={"w-[20%]"}>
@@ -82,6 +84,7 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
                         />
                     </div>
                 </div>
-        </div>
+            </div>
+        </AnimateHeight>
     )
 }
