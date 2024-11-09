@@ -51,10 +51,10 @@ export const FlipCard = ({ frontText, backText, active }: FlipCard) => {
         <div className="w-full" style={{ perspective: "2000px", userSelect: "none" }}>
             <div
                 onClick={handleFlip}
-                className="relative cursor-pointer min-h-[600px] max-h-[600px]"
+                className="relative cursor-pointer min-h-[600px] max-h-[600px] "
                 style={{
                     transformStyle: "preserve-3d",
-                    transition: "transform 0.4s linear",
+                    transition: "transform 0.3s linear",
                     transform: isFlipped ? "rotateX(180deg)" : "rotateX(0deg)"
                 }}
             >

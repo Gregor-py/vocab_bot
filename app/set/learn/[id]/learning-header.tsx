@@ -6,6 +6,7 @@ import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/
 import React from "react";
 import {useLearningStore} from "@/app/set/learn/[id]/useLearningStore";
 import { SetType } from "@/db/schema";
+import {ProgressBar} from "@/components/ui/progressbar";
 
 type Props = {
     set: SetType;
@@ -14,15 +15,26 @@ type Props = {
 export const LearningHeader = ({set}:  Props) => {
     const currentCard = useLearningStore(state => state.currentCard)
 
+    let percent = 0
+
+    if (set.flashcards.length !== 0) {
+        percent = Math.floor(((currentCard ) / set.flashcards.length) * 100);
+    }
+
     return (
-        <div className={"h-14 flex items-center justify-between max-w-[70%] mx-auto"}>
-            <div></div>
-            <div className={"text-3xl"}>
-                {currentCard} / {set.flashcards.length}
+        <div className={"relative h-20 text-3xl"}>
+            <div className={"flex items-center py-5 justify-between px-10"}>
+                <div></div>
+                <div>
+                    {currentCard + 1} / {set.flashcards.length}
+                </div>
+                <Link href={`/set/${set.id}`}>
+                    <Button variant={"destructive"} size={"icon"}><CloseIcon/></Button>
+                </Link>
             </div>
-            <Link href={`/set/${set.id}`}>
-                <Button variant={"destructive"} size={"icon"}><CloseIcon/></Button>
-            </Link>
+            <div className={"w-full"}>
+                <ProgressBar percent={percent}/>
+            </div>
         </div>
     )
 }

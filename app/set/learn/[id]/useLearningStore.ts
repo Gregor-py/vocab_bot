@@ -1,6 +1,4 @@
 import {create} from "zustand/index";
-import {flashcards as flashcardsSchema} from "@/db/schema";
-import {CustomEditor} from "@/components/editor/editor-types";
 
 type State = {
     currentCard: number;

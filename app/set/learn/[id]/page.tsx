@@ -20,7 +20,7 @@ const LearnSetPage = async ({params}: LearnSetPageProps) => {
     return (
         <div className={""}>
             <LearningHeader set={set} />
-            <div className={"max-w-[1000px] mx-auto"}>
+            <div className={"max-w-[1000px] mx-auto mt-10"}>
                 <FlashcardsCarousel flashcards={set.flashcards} />
             </div>
         </div>
