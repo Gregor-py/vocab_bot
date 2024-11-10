@@ -29,6 +29,12 @@ export const AddFlashcardButton = ({setId}: Props) => {
     }
 
     return (
-        <Button onClick={handleCreate} className={"w-full"} size={"lg"}>Add a flashcard <BadgePlus/></Button>
+        <Button
+            onClick={handleCreate}
+            className={"w-full flex items-center gap-4"}
+            size={"lg"}
+        >
+            <BadgePlus/> Add a flashcard
+        </Button>
     )
 }

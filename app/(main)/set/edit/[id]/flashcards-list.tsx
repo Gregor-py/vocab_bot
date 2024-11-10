@@ -1,7 +1,7 @@
 "use client"
 import {EditFlashcard} from "@/app/(main)/set/edit/[id]/edit-flashcard";
 import {AddFlashcardButton} from "@/app/(main)/set/edit/[id]/add-flashcard-button";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import axios from "axios";
 import {Flashcard} from "@/db/schema";
 import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
@@ -43,11 +43,11 @@ export const FlashcardsList = ({setId}: Props) => {
 
     return (
         <div>
-            <div className={"flex flex-col"}>
+            <div className={"mt-6"}>
+                <AddFlashcardButton setId={setId}/>
+            </div>
 
-                {flashcards.map((flashcard, id) => (
-                    <EditFlashcard key={flashcard.id} flashcard={flashcard} arrayId={id} />
-                ))}
+            <div className={"flex flex-col-reverse"}>
 
                 {[...Array(creatingFlashcardsCount).keys()].map((_, index) => (
                     <div key={index} className={"rounded-3xl overflow-hidden mt-6"}>
@@ -55,11 +55,12 @@ export const FlashcardsList = ({setId}: Props) => {
                     </div>
                 ))}
 
+                {flashcards.map((flashcard, id) => (
+                    <EditFlashcard key={flashcard.id} flashcard={flashcard} arrayId={id}/>
+                ))}
+
             </div>
 
-            <div className={"py-6"}>
-                <AddFlashcardButton setId={setId}/>
-            </div>
         </div>
     )
 }
