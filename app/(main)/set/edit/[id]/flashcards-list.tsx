@@ -5,8 +5,8 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {Flashcard} from "@/db/schema";
 import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
-import { Button } from "@/components/ui/button";
-import {cn} from "@/lib/utils";
+import Skeleton from "react-loading-skeleton";
+
 
 type Props = {
     setId: number;
@@ -16,6 +16,8 @@ type Props = {
 export const FlashcardsList = ({setId}: Props) => {
     const updateFlashcards = useFlashcardsStore(state => state.updateFlashcards)
     const updateIsLoading = useFlashcardsStore(state => state.updateIsLoading)
+    const creatingFlashcardsCount = useFlashcardsStore(state => state.creatingFlashcardsCount)
+
 
     const flashcards = useFlashcardsStore(state => state.flashcards)
     const isLoading = useFlashcardsStore(state => state.isLoading)
@@ -45,6 +47,12 @@ export const FlashcardsList = ({setId}: Props) => {
 
                 {flashcards.map((flashcard, id) => (
                     <EditFlashcard key={flashcard.id} flashcard={flashcard} arrayId={id} />
+                ))}
+
+                {[...Array(creatingFlashcardsCount).keys()].map((_, index) => (
+                    <div key={index} className={"rounded-3xl overflow-hidden mt-6"}>
+                        <Skeleton height={190}/>
+                    </div>
                 ))}
 
             </div>

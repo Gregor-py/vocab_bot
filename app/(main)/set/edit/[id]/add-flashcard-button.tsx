@@ -13,18 +13,22 @@ type Props = {
 export const AddFlashcardButton = ({setId}: Props) => {
     const addFlashcard = useFlashcardsStore(state => state.addFlashcard)
     const flashcards = useFlashcardsStore(state => state.flashcards)
+    const decrementCreatingFlashcardsCount = useFlashcardsStore(state => state.decrementCreatingFlashcardsCount)
+    const incrementCreatingFlashcardsCount = useFlashcardsStore(state => state.incrementCreatingFlashcardsCount)
 
     const handleCreate = async () => {
-        const flashcard = await axios.post<Flashcard>("/api/flashcard", {setId, order: flashcards.length+1}).then(data => data.data)
+        incrementCreatingFlashcardsCount()
+        const flashcard = await axios.post<Flashcard>("/api/flashcard", {setId, order: flashcards.length + 1}).then(data => data.data)
 
         if (!flashcard) {
             return;
         }
 
         addFlashcard(flashcard)
+        decrementCreatingFlashcardsCount()
     }
 
     return (
-        <Button onClick={handleCreate} className={"w-full"} size={"lg"}>Add a flashcard  <BadgePlus /></Button>
+        <Button onClick={handleCreate} className={"w-full"} size={"lg"}>Add a flashcard <BadgePlus/></Button>
     )
 }

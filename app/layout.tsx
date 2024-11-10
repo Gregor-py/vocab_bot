@@ -1,7 +1,9 @@
 import type {Metadata} from "next";
 import {PT_Sans} from "next/font/google";
 import "./globals.css";
+import 'react-loading-skeleton/dist/skeleton.css'
 import {ClerkProvider} from '@clerk/nextjs'
+import {SkeletonTheme} from "react-loading-skeleton";
 
 const ptSans = PT_Sans({subsets: ["latin", "cyrillic"], weight: ["400", "700"]});
 
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
     title: "Vocab bot",
     description: "",
 };
-// Oswald
+
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
@@ -17,11 +19,13 @@ export default function RootLayout({
 }>) {
     return (
         <ClerkProvider>
-            <html lang="en">
-            <body className={ptSans.className}>
-            {children}
-            </body>
-            </html>
+            <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                <html lang="en">
+                <body className={ptSans.className}>
+                {children}
+                </body>
+                </html>
+            </SkeletonTheme>
         </ClerkProvider>
     );
 }
