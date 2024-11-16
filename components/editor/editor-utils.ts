@@ -1,4 +1,4 @@
-import {Descendant, Editor, Text} from "slate";
+import {Descendant, Editor, Text, Transforms} from "slate";
 import {
     CustomEditor as CustomEditorType,
     FormatKeys,
@@ -131,6 +131,19 @@ export const mergeChildren = (children: Descendant[]): Descendant => {
 
 
 export const CustomEditor = {
+    putText(editor: CustomEditorType, text: string) {
+        Transforms.select(editor, {
+            anchor: Editor.start(editor, []),
+            focus: Editor.end(editor, []),
+        });
+
+        Transforms.removeNodes(editor);
+
+        const newNode = text ? deserialize(text) : [{ type: 'paragraph', children: [{ text: '' }] }] as Descendant[]
+
+        Transforms.insertNodes(editor, newNode);
+    },
+
     removeAllFormating(editor: CustomEditorType) {
         Editor.removeMark(editor, "bold")
         Editor.removeMark(editor, "italic")

@@ -10,10 +10,11 @@ import Skeleton from "react-loading-skeleton";
 
 type Props = {
     setId: number;
+    language: string;
 }
 
 
-export const FlashcardsList = ({setId}: Props) => {
+export const FlashcardsList = ({setId, language}: Props) => {
     const updateFlashcards = useFlashcardsStore(state => state.updateFlashcards)
     const updateIsLoading = useFlashcardsStore(state => state.updateIsLoading)
     const creatingFlashcardsCount = useFlashcardsStore(state => state.creatingFlashcardsCount)
@@ -49,14 +50,14 @@ export const FlashcardsList = ({setId}: Props) => {
 
             <div className={"flex flex-col-reverse"}>
 
+                {flashcards.map((flashcard, id) => (
+                    <EditFlashcard key={flashcard.id} language={language} flashcard={flashcard} arrayId={id}/>
+                ))}
+
                 {[...Array(creatingFlashcardsCount).keys()].map((_, index) => (
                     <div key={index} className={"rounded-3xl overflow-hidden mt-6"}>
                         <Skeleton height={190}/>
                     </div>
-                ))}
-
-                {flashcards.map((flashcard, id) => (
-                    <EditFlashcard key={flashcard.id} flashcard={flashcard} arrayId={id}/>
                 ))}
 
             </div>

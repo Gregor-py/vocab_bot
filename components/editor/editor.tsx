@@ -7,19 +7,20 @@ import {cn} from "@/lib/utils";
 import {withHistory} from "slate-history";
 import {CustomEditor, deserialize, serialize} from './editor-utils';
 import {useEditorStore} from "@/components/editor/useEditorStore";
+import {CustomEditor as CustomEditorType} from "./editor-types"
 
 type Props = {
     className?: string,
     setValue?: (value: string) => void,
     initialText?: string
+    editor: CustomEditorType
 }
 
-export const EditorComponent = ({className, setValue, initialText}: Props) => {
+export const EditorComponent = ({className, setValue, initialText, editor}: Props) => {
     const initialValue = useMemo(() => {
         return initialText ? deserialize(initialText) : [{ type: 'paragraph', children: [{ text: '' }] }] as Descendant[];
-    }, []);
+    }, [initialText]);
 
-    const [editor] = useState(() => withHistory(withReact(createEditor())))
     const updateCurrentEditor = useEditorStore(state => state.updateCurrentEditor)
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

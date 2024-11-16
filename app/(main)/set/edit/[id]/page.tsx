@@ -23,7 +23,7 @@ const SetEditPage = async ({ params }: SetPageProps) => {
                 <SetTitle set={set} />
             </div>
 
-            <FlashcardsList setId={params.id} />
+            <FlashcardsList language={set.language.name} setId={params.id} />
         </div>
     )
 }

@@ -2,8 +2,8 @@
 
 import {Flashcard} from "@/db/schema";
 import {Button} from "@/components/ui/button";
-import {Cuboid, FlameIcon, Loader, Trash, WandSparklesIcon} from "lucide-react";
-import {cn} from "@/lib/utils";
+import {Cuboid, Loader, Trash} from "lucide-react";
+import {cleanHtml, cn} from "@/lib/utils";
 import axios from "axios";
 import {useFlashcardsStore} from "@/app/(main)/set/edit/[id]/useFlashcardsStore";
 import {FlashcardInput} from "@/app/(main)/set/edit/[id]/flashcard-input";
@@ -11,10 +11,17 @@ import {EditorButtons} from "@/components/editor/editor-buttons";
 import {useEditorStore} from "@/components/editor/useEditorStore";
 import {useState} from "react";
 import AnimateHeight, {Height} from "react-animate-height";
+import {FillWithAiButton} from "@/app/(main)/set/edit/[id]/fill-with-ai-button";
+import {toast} from "@/hooks/use-toast";
+import {withHistory} from "slate-history";
+import {withReact} from "slate-react";
+import {createEditor} from "slate";
+import {CustomEditor} from "@/components/editor/editor-utils";
 
 type Props = {
     flashcard: Flashcard;
     arrayId: number;
+    language: string;
 }
 
 type SavingHash = {
@@ -22,12 +29,19 @@ type SavingHash = {
     backSide: boolean;
 }
 
-export const EditFlashcard = ({flashcard, arrayId}: Props) => {
+export const EditFlashcard = ({flashcard, arrayId, language}: Props) => {
     const updateRemovingFlashcardId = useFlashcardsStore(state => state.updateRemovingFlashcardId)
     const deleteFlashcard = useFlashcardsStore(state => state.deleteFlashcard)
     const removingFlashcardId = useFlashcardsStore(state => state.removingFlashcardId)
     const isRemoving = removingFlashcardId === flashcard.id
     const [height, setHeight] = useState<Height>("auto")
+
+    const [termEditor] = useState(() => withHistory(withReact(createEditor())))
+    const [backSideEditor] = useState(() => withHistory(withReact(createEditor())))
+
+    const [initialBacksideValue, setInitialBacksideValue] = useState(flashcard.backSide || "")
+
+    const [term, setTerm] = useState(flashcard.term || "")
 
     const [savingHash, setIsSavingHash] = useState<SavingHash>({
         backSide: false,
@@ -48,28 +62,47 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
         }, 300)
     }
 
+    const onFillWithAi = () => {
+        const cleanedTerm = cleanHtml(term)
+
+        if (!cleanedTerm) {
+            toast({
+                title: "There is no term",
+                description: "Write the term down",
+            })
+            return
+        }
+
+        axios.put(`/api/ai/card-fill`, {language: language, term: cleanedTerm})
+            .then((response) => {
+                const {backSide} = response.data
+
+                console.log(response.data)
+
+                if (!backSide) {
+                    toast({
+                        title: "Error",
+                        description: "Write the term down",
+                    })
+                }
+
+                console.log(backSide)
+
+                CustomEditor.putText(backSideEditor, backSide)
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+    }
+
     return (
         <AnimateHeight height={height} duration={300}>
-            <div className={cn("w-full border rounded-2xl pb-4 overflow-hidden max-h-full transition-all duration-500 mt-6", isRemoving ? "opacity-0 mt-0" : "opacity-100")}>
+            <div
+                className={cn("w-full border rounded-2xl pb-4 overflow-hidden max-h-full transition-all duration-500 mt-6", isRemoving ? "opacity-0 mt-0" : "opacity-100")}>
                 <div className={"border-b py-3 px-7 flex justify-between items-center"}>
-                    <span className={"font-bold flex items-center gap-2"}>{arrayId + 1} <Cuboid /></span>
+                    <span className={"font-bold flex items-center gap-2"}>{arrayId + 1} <Cuboid/></span>
 
-                    <button
-                        className={"flex gap-2 items-center relative group bg-neutral-800 rounded-2xl px-4 py-1 transition-all group-hover:bg-neutral-900"}
-                    >
-                        <WandSparklesIcon width={20} height={20} className={"group-hover:text-violet-200 transition-colors"}/>
-                        <span className={"text-lg group-hover:text-violet-200 transition-colors"}>Fill with AI</span>
-                        <FlameIcon
-                            width={16}
-                            height={16}
-                            className={"transition-all duration-500 text-amber-300 absolute left-[50%] opacity-0 top-0 group-hover:-translate-y-2 rotate-90 group-hover:translate-x-7 group-hover:rotate-0 group-hover:opacity-100"}
-                        />
-                        <FlameIcon
-                            width={16}
-                            height={16}
-                            className={"transition-all duration-500 text-amber-300 absolute left-[50%] rotate-90 opacity-0 top-[50%] group-hover:translate-y-2 group-hover:-translate-x-10 group-hover:rotate-0 group-hover:opacity-100"}
-                        />
-                    </button>
+                    <FillWithAiButton onClick={onFillWithAi}/>
 
                     <Loader className={cn("animate-spin transition-all", isSaving ? "opacity-100" : "opacity-0")}/>
                     <EditorButtons editor={currentEditor}/>
@@ -85,16 +118,19 @@ export const EditFlashcard = ({flashcard, arrayId}: Props) => {
                 <div className={"px-7 py-6 flex gap-4"}>
                     <div className={"w-[20%]"}>
                         <FlashcardInput
+                            editor={termEditor}
                             initialValue={flashcard.term || ""}
                             title={"Term"}
                             fieldName={"term"}
                             flashcardId={flashcard.id}
                             setSaving={(state) => setIsSavingHash(prevState => ({...prevState, term: state}))}
+                            onChange={(value) => setTerm(value)}
                         />
                     </div>
                     <div className={"w-[80%]"}>
                         <FlashcardInput
-                            initialValue={flashcard.backSide || ""}
+                            editor={backSideEditor}
+                            initialValue={initialBacksideValue}
                             title={"Back side"}
                             fieldName={"backSide"}
                             flashcardId={flashcard.id}
