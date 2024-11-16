@@ -1,10 +1,9 @@
 "use client"
 
-import React, {useCallback, useMemo, useState} from 'react'
-import {createEditor, Descendant} from 'slate'
-import {Editable, RenderElementProps, RenderLeafProps, Slate, withReact} from 'slate-react'
+import React, {useCallback, useMemo} from 'react'
+import {Descendant} from 'slate'
+import {Editable, RenderElementProps, RenderLeafProps, Slate} from 'slate-react'
 import {cn} from "@/lib/utils";
-import {withHistory} from "slate-history";
 import {CustomEditor, deserialize, serialize} from './editor-utils';
 import {useEditorStore} from "@/components/editor/useEditorStore";
 import {CustomEditor as CustomEditorType} from "./editor-types"
@@ -14,9 +13,10 @@ type Props = {
     setValue?: (value: string) => void,
     initialText?: string
     editor: CustomEditorType
+    readonly?: boolean
 }
 
-export const EditorComponent = ({className, setValue, initialText, editor}: Props) => {
+export const EditorComponent = ({className, setValue, initialText, editor, readonly = false}: Props) => {
     const initialValue = useMemo(() => {
         return initialText ? deserialize(initialText) : [{ type: 'paragraph', children: [{ text: '' }] }] as Descendant[];
     }, [initialText]);
@@ -67,6 +67,7 @@ export const EditorComponent = ({className, setValue, initialText, editor}: Prop
                 onChange={handleChange}
             >
                 <Editable
+                    readOnly={readonly}
                     className={"focus:outline-none"}
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}

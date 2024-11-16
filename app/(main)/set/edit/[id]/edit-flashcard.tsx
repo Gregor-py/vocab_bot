@@ -17,6 +17,7 @@ import {withHistory} from "slate-history";
 import {withReact} from "slate-react";
 import {createEditor} from "slate";
 import {CustomEditor} from "@/components/editor/editor-utils";
+import Skeleton from "react-loading-skeleton";
 
 type Props = {
     flashcard: Flashcard;
@@ -35,6 +36,8 @@ export const EditFlashcard = ({flashcard, arrayId, language}: Props) => {
     const removingFlashcardId = useFlashcardsStore(state => state.removingFlashcardId)
     const isRemoving = removingFlashcardId === flashcard.id
     const [height, setHeight] = useState<Height>("auto")
+
+    const [fillingWithAiLoading, setFillingWithAiLoading] = useState(false)
 
     const [termEditor] = useState(() => withHistory(withReact(createEditor())))
     const [backSideEditor] = useState(() => withHistory(withReact(createEditor())))
@@ -72,12 +75,10 @@ export const EditFlashcard = ({flashcard, arrayId, language}: Props) => {
             })
             return
         }
-
+        setFillingWithAiLoading(true)
         axios.put(`/api/ai/card-fill`, {language: language, term: cleanedTerm})
             .then((response) => {
                 const {backSide} = response.data
-
-                console.log(response.data)
 
                 if (!backSide) {
                     toast({
@@ -86,12 +87,12 @@ export const EditFlashcard = ({flashcard, arrayId, language}: Props) => {
                     })
                 }
 
-                console.log(backSide)
-
                 CustomEditor.putText(backSideEditor, backSide)
+                setFillingWithAiLoading(false)
             })
             .catch((e) => {
                 console.log(e)
+                setFillingWithAiLoading(false)
             })
     }
 
@@ -102,7 +103,7 @@ export const EditFlashcard = ({flashcard, arrayId, language}: Props) => {
                 <div className={"border-b py-3 px-7 flex justify-between items-center"}>
                     <span className={"font-bold flex items-center gap-2"}>{arrayId + 1} <Cuboid/></span>
 
-                    <FillWithAiButton onClick={onFillWithAi}/>
+                    <FillWithAiButton loading={fillingWithAiLoading} onClick={onFillWithAi}/>
 
                     <Loader className={cn("animate-spin transition-all", isSaving ? "opacity-100" : "opacity-0")}/>
                     <EditorButtons editor={currentEditor}/>
@@ -135,6 +136,7 @@ export const EditFlashcard = ({flashcard, arrayId, language}: Props) => {
                             fieldName={"backSide"}
                             flashcardId={flashcard.id}
                             setSaving={(state) => setIsSavingHash(prevState => ({...prevState, backSide: state}))}
+                            loading={fillingWithAiLoading}
                         />
                     </div>
                 </div>
