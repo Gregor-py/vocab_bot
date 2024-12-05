@@ -2,6 +2,7 @@ import {getSetById} from "@/db/queries";
 import {FlashcardsList} from "@/app/(main)/set/edit/[id]/flashcards-list";
 import {SetTitle} from "@/app/(main)/set/edit/[id]/set-title";
 import {redirect} from "next/navigation";
+import {Swapy} from "@/components/drag-and-drop/drag-and-drop";
 
 interface SetPageProps {
     params: {
@@ -18,6 +19,8 @@ const SetEditPage = async ({ params }: SetPageProps) => {
     return (
         <div className={"mt-4"}>
             <h2 className={"text-4xl"}>Edit a new flashcards set</h2>
+
+            <Swapy />
 
             <div className={"mt-3"}>
                 <SetTitle set={set} />
