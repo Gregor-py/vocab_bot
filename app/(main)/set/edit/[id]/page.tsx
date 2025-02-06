@@ -2,7 +2,8 @@ import {getSetById} from "@/db/queries";
 import {FlashcardsList} from "@/app/(main)/set/edit/[id]/flashcards-list";
 import {SetTitle} from "@/app/(main)/set/edit/[id]/set-title";
 import {redirect} from "next/navigation";
-import {Swapy} from "@/components/drag-and-drop/drag-and-drop";
+import {Button} from "@/components/ui/button";
+import {AiPresetSelect} from "@/app/(main)/set/edit/[id]/ai-preset-select";
 
 interface SetPageProps {
     params: {
@@ -18,12 +19,19 @@ const SetEditPage = async ({ params }: SetPageProps) => {
 
     return (
         <div className={"mt-4"}>
-            <h2 className={"text-4xl"}>Edit a new flashcards set</h2>
-
-            <Swapy />
+            <h2 className={"text-3xl"}>Edit a new flashcards set</h2>
 
             <div className={"mt-3"}>
                 <SetTitle set={set} />
+            </div>
+
+            <div className={"mt-3"}>
+                <div className={"flex gap-4"}>
+                    <div className={'flex-1'}>
+                        <AiPresetSelect />
+                    </div>
+                    <Button variant={"secondary"}>Manage your ai presets</Button>
+                </div>
             </div>
 
             <FlashcardsList language={set.language.name} setId={params.id} />

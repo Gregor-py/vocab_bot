@@ -61,6 +61,7 @@ export const userPreferencesRelation = relations(userPreferences, ({one}) => ({
 
 export const generationSettings = pgTable("generation-settings", {
     id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
     generationTranslationOptionsId: integer("generation_translation_options_id").references(() => generationTranslationOptions.id),
     generationMeaningOptionsId: integer("generation_meaning_options_id").references(() => generationMeaningOptions.id),
 })
@@ -82,13 +83,15 @@ export const generationTranslationOptions = pgTable("generation-translation-opti
     id: serial("id").primaryKey(),
     order: integer("order").notNull().default(1),
     amount: integer("amount").default(1),
-    difficulty: difficultyEnum("difficulty").default("easy").notNull()
+    difficulty: difficultyEnum("difficulty").default("easy").notNull(),
+    isShown: boolean("isShown").default(false)
 })
 
 export const generationMeaningOptions = pgTable("generation-meaning-options", {
     id: serial("id").primaryKey(),
     order: integer("order").notNull().default(1),
-    difficulty: difficultyEnum("difficulty").default("easy").notNull()
+    difficulty: difficultyEnum("difficulty").default("easy").notNull(),
+    isShown: boolean("isShown").default(false)
 })
 
 export const flashcardsRelation = relations(flashcards, ({one}) => ({
@@ -97,6 +100,8 @@ export const flashcardsRelation = relations(flashcards, ({one}) => ({
         references: [sets.id]
     })
 }))
+
+// types
 
 export type Flashcard = typeof flashcards.$inferSelect;
 export type SetType = typeof sets.$inferSelect & {
